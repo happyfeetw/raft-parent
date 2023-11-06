@@ -1,4 +1,4 @@
-package com.spike.raft;
+package com.spike.raft.election;
 
 public abstract class AbstractNodeRole {
     private final RoleName name;

@@ -1,4 +1,4 @@
-package com.spike.raft;
+package com.spike.raft.election;
 
 public class FollowerNodeRole extends AbstractNodeRole{
     private final NodeId votedFore;

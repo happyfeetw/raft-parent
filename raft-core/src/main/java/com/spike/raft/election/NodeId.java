@@ -1,4 +1,4 @@
-package com.spike.raft;
+package com.spike.raft.election;
 
 import java.io.Serializable;
 import java.util.Objects;

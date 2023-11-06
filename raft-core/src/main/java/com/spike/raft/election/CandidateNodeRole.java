@@ -1,4 +1,4 @@
-package com.spike.raft;
+package com.spike.raft.election;
 
 public class CandidateNodeRole extends AbstractNodeRole{
     /**
