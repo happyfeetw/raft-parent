@@ -5,4 +5,8 @@ package com.spike.raft.core;
  *
  */
 public interface Node {
+
+    void start();
+
+    void stop() throws InterruptedException;
 }
