@@ -4,7 +4,9 @@ import com.spike.raft.election.NodeId;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -71,4 +73,10 @@ public class NodeGroup {
     }
 
 
+    public Set<NodeEndpoint> listEndpointExceptSelf () {
+        return listReplicationTarget()
+                .stream()
+                .map(GroupMember::getEndPoint)
+                .collect(Collectors.toSet());
+    }
 }

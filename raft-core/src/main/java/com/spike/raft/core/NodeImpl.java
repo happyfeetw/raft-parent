@@ -1,9 +1,11 @@
 package com.spike.raft.core;
 
 import com.spike.raft.election.AbstractNodeRole;
+import com.spike.raft.election.CandidateNodeRole;
 import com.spike.raft.election.ElectionTimeout;
 import com.spike.raft.election.FollowerNodeRole;
 import com.spike.raft.election.RoleName;
+import com.spike.raft.rpc.RequestVoteRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,17 +69,46 @@ public class NodeImpl implements Node {
     }
 
     private void electionTimeout () {
-        // todo
+        context.getTaskExecutor().submit(this::doProcessElectionTimeout);
     }
 
-    private void changeToRole (FollowerNodeRole newRole) {
+    /**
+     * 设定electionTimeout任务是在定时器线程中，而本类是在主线程中被调用的
+     * 因此需要做任务转换
+     */
+    private void doProcessElectionTimeout () {
+        // 当前节点Leader角色不存在选举超时任务
+        if (role.getName().equals(RoleName.LEADER)) {
+            logger.warn("node {}'s current role is leader, ignore electionTimeout.", context.getSelfId());
+        }
+
+        // 当前节点是follower时，发起选举
+        // 当前节点时candidate时，再次发起选举
+        int newTerm = role.getTerm() + 1;
+        role.cancelTimeoutOrTask();
+        logger.info("node {} start election.", context.getSelfId());
+
+        // 自己投给自己一票，变成candidate角色
+        changeToRole(new CandidateNodeRole(newTerm, scheduleElectionTimeout()));
+        // 发送requestVote，拉票
+        RequestVoteRpc rpc = new RequestVoteRpc();
+        rpc.setTerm(newTerm);
+        rpc.setCandidateId(context.selfId());
+        rpc.setLastLogIndex(0);
+        rpc.setLastLogTerm(0);
+
+        // 发送消息
+        context.getConnector().sendRequestVote(rpc, context.getGroup().listEndpointExceptSelf());
+    }
+
+    private void changeToRole (AbstractNodeRole newRole) {
         logger.debug("node{}, role state changed -> {}", context.selfId(), newRole);
 
         NodeStore store = context.getStore();
         store.setTerm(newRole.getTerm());
 
         if (newRole.getName().equals(RoleName.FOLLOWER)) {
-            store.setVotedFor(newRole.getVotedFore());
+            store.setVotedFor(((FollowerNodeRole)newRole).getVotedFore());
         }
 
         role = newRole;
