@@ -19,6 +19,11 @@ public abstract class AbstractNodeRole {
      */
     public abstract void cancelTimeoutOrTask();
 
+    // todo why nodeId as param?
+    public NodeId getLeaderId(NodeId nodeId) {
+        return null;
+    }
+
     public int getTerm () {
         return term;
     }

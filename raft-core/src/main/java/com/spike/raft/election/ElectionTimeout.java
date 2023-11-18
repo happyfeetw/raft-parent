@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
  * 非leader节点的选举超时定时器
  */
 public class ElectionTimeout {
+    public static final ElectionTimeout NONE = null;
     private final ScheduledFuture<?> scheduledFuture;
 
     public ElectionTimeout (ScheduledFuture<?> scheduledFuture) {

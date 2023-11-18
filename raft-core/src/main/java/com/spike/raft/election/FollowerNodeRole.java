@@ -25,6 +25,11 @@ public class FollowerNodeRole extends AbstractNodeRole{
     }
 
     @Override
+    public NodeId getLeaderId (NodeId nodeId) {
+        return getLeaderId();
+    }
+
+    @Override
     public String toString () {
         return "FollowerNodeRole{" +
                 "term=" + term +

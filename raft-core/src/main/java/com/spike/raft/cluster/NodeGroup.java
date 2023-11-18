@@ -4,7 +4,6 @@ import com.spike.raft.election.NodeId;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,7 +45,7 @@ public class NodeGroup {
      * @param nodeId
      * @return
      */
-    GroupMember findMember(NodeId nodeId) {
+    public GroupMember findMember(NodeId nodeId) {
         GroupMember member = getMember(nodeId);
         if (member == null) throw new IllegalArgumentException("No such node: " + nodeId.getValue());
         return member;
@@ -66,7 +65,7 @@ public class NodeGroup {
      * 只有当前节点为leader节点时才会调用该方法
      * @return
      */
-    Collection<GroupMember> listReplicationTarget() {
+    public Collection<GroupMember> listReplicationTarget() {
         return this.memberMap.values().stream()
                 .filter(member -> !member.idEquals(selfId))
                 .collect(Collectors.toList());
@@ -76,7 +75,11 @@ public class NodeGroup {
     public Set<NodeEndpoint> listEndpointExceptSelf () {
         return listReplicationTarget()
                 .stream()
-                .map(GroupMember::getEndPoint)
+                .map(GroupMember::getEndpoint)
                 .collect(Collectors.toSet());
+    }
+
+    public int getCount () {
+        return memberMap.size();
     }
 }

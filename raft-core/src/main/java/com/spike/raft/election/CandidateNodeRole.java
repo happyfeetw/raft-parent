@@ -35,8 +35,21 @@ public class CandidateNodeRole extends AbstractNodeRole{
     }
 
     @Override
+    public NodeId getLeaderId (NodeId nodeId) {
+        return null;
+    }
+
+    @Override
     public void cancelTimeoutOrTask () {
         electionTimeout.cancel();
+    }
+
+    public int getVotesCount () {
+        return votesCount;
+    }
+
+    public ElectionTimeout getElectionTimeout () {
+        return electionTimeout;
     }
 
     @Override

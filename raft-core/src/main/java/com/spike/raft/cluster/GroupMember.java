@@ -1,5 +1,6 @@
 package com.spike.raft.cluster;
 
+import com.spike.raft.core.ReplicatingState;
 import com.spike.raft.election.NodeId;
 
 /**
@@ -46,12 +47,12 @@ public class GroupMember {
         return replicatingState;
     }
 
-    public NodeEndpoint getEndPoint () {
+    public NodeEndpoint getEndpoint () {
         return endPoint;
     }
 
     // todo rename this method.
     public boolean idEquals (NodeId id) {
-        return getEndPoint().getId().equals(id);
+        return getEndpoint().getId().equals(id);
     }
 }

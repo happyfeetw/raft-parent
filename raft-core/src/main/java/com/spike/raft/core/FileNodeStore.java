@@ -3,6 +3,8 @@ package com.spike.raft.core;
 import com.google.common.io.Files;
 import com.spike.raft.election.NodeId;
 import com.spike.raft.exception.NodeStoreException;
+import com.spike.raft.log.RandomAccessFileAdapter;
+import com.spike.raft.log.SeekableFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +34,7 @@ public class FileNodeStore implements NodeStore {
             if (!file.exists()) {
                 Files.touch(file);
             }
-            seekableFile = new RandomaccessfileAdapter(file);
+            seekableFile = new RandomAccessFileAdapter(file);
             initializeOrLoad();
         } catch (IOException e) {
             throw new NodeStoreException(e);
