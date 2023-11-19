@@ -5,17 +5,12 @@ import com.spike.raft.election.NodeId;
 /**
  * 拉票消息rpc的包装类
  */
-public class RequestVoteRpcMessage {
+public class RequestVoteRpcMessage extends RpcMessage{
     private final RequestVoteRpc rpc;
-    private final NodeId sourceNodeId;
 
     public RequestVoteRpcMessage (RequestVoteRpc rpc, NodeId sourceNodeId) {
+        super(sourceNodeId);
         this.rpc = rpc;
-        this.sourceNodeId = sourceNodeId;
-    }
-
-    public NodeId getSourceNodeId () {
-        return sourceNodeId;
     }
 
     public RequestVoteRpc get () {

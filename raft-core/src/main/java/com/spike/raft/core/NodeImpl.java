@@ -10,7 +10,10 @@ import com.spike.raft.election.LeaderNodeRole;
 import com.spike.raft.election.LogReplicationTask;
 import com.spike.raft.election.NodeId;
 import com.spike.raft.election.RoleName;
+import com.spike.raft.rpc.AppendEntriesResult;
+import com.spike.raft.rpc.AppendEntriesResultMessage;
 import com.spike.raft.rpc.AppendEntriesRpc;
+import com.spike.raft.rpc.AppendEntriesRpcMessage;
 import com.spike.raft.rpc.RequestVoteResult;
 import com.spike.raft.rpc.RequestVoteRpc;
 import com.spike.raft.rpc.RequestVoteRpcMessage;
@@ -190,7 +193,7 @@ public class NodeImpl implements Node {
      */
     private void becomeFollower (int term, NodeId votedFor, NodeId leaderId, boolean scheduleElectionTimeout) {
         role.cancelTimeoutOrTask(); // 角色变换前先取消选举超时
-        if (leaderId != null && !leaderId.equals(role.getLeaderId(context.selfId()))) { //todo  why need selfId
+        if (leaderId != null && !leaderId.equals(role.getLeaderId(context.selfId()))) { //todo  why need selfId?
             logger.info("current leader is {}, term {}", leaderId, term);
         }
 
@@ -268,4 +271,87 @@ public class NodeImpl implements Node {
         // rpc.entries 为空，待日志部分实现后再修改
         context.getConnector().sendAppendEntries(rpc, member.getEndpoint());
     }
+
+    /**
+     * 非leader节点收到来自leader节点的appendEntries消息
+     * @param rpcMsg
+     */
+    @Subscribe
+    public void onReceiveAppendEntriesRpc(AppendEntriesRpcMessage rpcMsg) {
+        context.getTaskExecutor().submit(() -> {
+            context.getConnector().replyAppendEntries(
+                    doProcessAppendEntriesRpc(rpcMsg),
+                    context.getGroup().findMember(rpcMsg.getSourceNodeId()).getEndpoint()
+            );
+        });
+    }
+
+    private AppendEntriesResult doProcessAppendEntriesRpc (AppendEntriesRpcMessage rpcMsg) {
+        AppendEntriesRpc rpc = rpcMsg.get();
+        // 如果leader发来的消息中term比自己的小，则将自己的term返回，并且不追加
+        if (rpc.getTerm() < role.getTerm()) { // case 1.
+            return new AppendEntriesResult(role.getTerm(), false);
+        }
+
+        // 如果对方发来的消息中term比自己大，则无条件退化为follower，并追加日志
+        if (rpc.getTerm() > role.getTerm()) { // case 2
+            becomeFollower(rpc.getTerm(), null, rpc.getLeaderId(), true);
+            return new AppendEntriesResult(rpc.getTerm(), true);
+        }
+
+        // 校验，然后处理相等的情况
+        assert rpc.getTerm() == role.getTerm();
+
+        switch (role.getName()) {
+            case FOLLOWER: // case 3
+                becomeFollower(
+                        rpc.getTerm(),
+                        ((FollowerNodeRole) role).getVotedFore(),
+                        rpc.getLeaderId(),
+                        true);
+                return new AppendEntriesResult(rpc.getTerm(), appendEntries(rpc));
+            case CANDIDATE: // case 4
+                // 说明对方已经先从candidate变成了leader，此时应该退化为follower并重置选举超时定时器
+                becomeFollower(rpc.getTerm(), null, rpc.getLeaderId(), true);
+                return new AppendEntriesResult(rpc.getTerm(), appendEntries(rpc));
+            case LEADER: // case 5
+                // 存在至少两个leader，属于异常情况，打印日志
+                logger.warn("Receive append entries rpc from another leader {}, please check.", rpc.getLeaderId());
+                return new AppendEntriesResult(rpc.getTerm(), false);
+            default:
+                throw new IllegalStateException("Unexpected node role [" + role.getName() + "]");
+        }
+    }
+
+    private boolean appendEntries (AppendEntriesRpc rpc) {
+        // todo 临时返回true
+        return true;
+    }
+
+    @Subscribe
+    public void onReceiveAppendEntriesResult(AppendEntriesResultMessage resultMsg) {
+        this.context.getTaskExecutor().submit(() -> doProcessAppendEntriesResult(resultMsg));
+    }
+
+    /**
+     * leader节点收到其他节点的appendEntriesRpc响应
+     * @param resultMsg
+     */
+    private void doProcessAppendEntriesResult (AppendEntriesResultMessage resultMsg) {
+        AppendEntriesResult result = resultMsg.get();
+        // 如果对方的term比自己大，自己退化成follower，重置选举超时定时器
+        if (result.getTerm() > role.getTerm()) {
+            becomeFollower(result.getTerm(), null, null, true);
+            return;
+        }
+        // 检查自己的角色, 如果不是leader，打印警告信息。
+        if (!RoleName.LEADER.equals(role.getName())) {
+            logger.warn("Receive append entries result from node {} but current node is not leader, ignore.",
+                    resultMsg.getSourceNodeId());
+        }
+
+        // 其他情况不需要处理
+
+    }
+
 }

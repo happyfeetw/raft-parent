@@ -32,7 +32,7 @@ public interface Connector {
     void sendAppendEntries(AppendEntriesRpc rpc,
                            NodeEndpoint destEndpoint);
 
-    void replyAppendEntriesRe(AppendEntriesResult result,
-                              NodeEndpoint destEndpoint);
+    void replyAppendEntries (AppendEntriesResult result,
+                             NodeEndpoint destEndpoint);
 
 }

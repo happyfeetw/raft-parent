@@ -2,6 +2,9 @@ package com.spike.raft.rpc;
 
 public class AppendEntriesResult {
     private final int term;
+    /**
+     * 是否追加成功
+     */
     private final boolean success;
 
     public AppendEntriesResult (int term, boolean success) {
