@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
  * Leader节点日志复制定时器
  */
 public class LogReplicationTask {
+    public static final LogReplicationTask NONE = null;
     private final ScheduledFuture<?> scheduledFuture;
     public LogReplicationTask (ScheduledFuture<?> scheduledFuture) {
         this.scheduledFuture = scheduledFuture;
