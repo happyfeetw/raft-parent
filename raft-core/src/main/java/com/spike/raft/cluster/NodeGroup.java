@@ -22,7 +22,7 @@ public class NodeGroup {
      */
     private Map<NodeId, GroupMember> memberMap;
 
-    NodeGroup (Collection<NodeEndpoint> endpoints, NodeId selfId) {
+    public NodeGroup (Collection<NodeEndpoint> endpoints, NodeId selfId) {
         this.memberMap = buildMemberMap(endpoints);
         this.selfId = selfId;
     }

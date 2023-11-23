@@ -1,5 +1,7 @@
 package com.spike.raft.election;
 
+import com.spike.raft.test.NullScheduledFuture;
+
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -7,7 +9,10 @@ import java.util.concurrent.TimeUnit;
  * Leader节点日志复制定时器
  */
 public class LogReplicationTask {
-    public static final LogReplicationTask NONE = null;
+    /**
+     * for test only
+     */
+    public static final LogReplicationTask NONE = new LogReplicationTask(new NullScheduledFuture());
     private final ScheduledFuture<?> scheduledFuture;
     public LogReplicationTask (ScheduledFuture<?> scheduledFuture) {
         this.scheduledFuture = scheduledFuture;

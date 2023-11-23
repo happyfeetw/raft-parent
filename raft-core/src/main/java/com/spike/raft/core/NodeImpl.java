@@ -115,7 +115,7 @@ public class NodeImpl implements Node {
     }
 
     private void changeToRole (AbstractNodeRole newRole) {
-        logger.debug("node{}, role state changed -> {}", context.selfId(), newRole);
+        logger.debug("node {}, role state changed -> {}", context.selfId(), newRole);
 
         NodeStore store = context.getStore();
         store.setTerm(newRole.getTerm());
@@ -352,6 +352,22 @@ public class NodeImpl implements Node {
 
         // 其他情况不需要处理
 
+    }
+
+    /**
+     * for test only. pay attention to its visibility.
+     * @return
+     */
+    public NodeContext getContext() {
+        return this.context;
+    }
+
+    /**
+     * for test only. pay attention to its visibility.
+     * @return
+     */
+    public AbstractNodeRole getRole() {
+        return this.role;
     }
 
 }

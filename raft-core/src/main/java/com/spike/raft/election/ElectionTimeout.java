@@ -1,5 +1,7 @@
 package com.spike.raft.election;
 
+import com.spike.raft.test.NullScheduledFuture;
+
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -7,7 +9,10 @@ import java.util.concurrent.TimeUnit;
  * 非leader节点的选举超时定时器
  */
 public class ElectionTimeout {
-    public static final ElectionTimeout NONE = null;
+    /**
+     * for test only
+     */
+    public static final ElectionTimeout NONE = new ElectionTimeout(new NullScheduledFuture());
     private final ScheduledFuture<?> scheduledFuture;
 
     public ElectionTimeout (ScheduledFuture<?> scheduledFuture) {
