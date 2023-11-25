@@ -19,6 +19,9 @@ public class NodeImplTest {
                 .setTaskExecutor(new DirectTaskExecutor());
     }
 
+    /**
+     * 启动测试，要求启动后角色为follower，term为0
+     */
     @Test
     public void start() {
         NodeImpl node = (NodeImpl) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 10086)).build();
