@@ -7,7 +7,6 @@ import com.spike.raft.election.NodeId;
 import com.spike.raft.process.SingleThreadTaskExecutor;
 import com.spike.raft.process.TaskExecutor;
 import com.spike.raft.rpc.Connector;
-import com.spike.raft.schedule.DefaultScheduler;
 import com.spike.raft.schedule.Scheduler;
 
 import java.util.Collection;

@@ -81,7 +81,7 @@ public class NodeImpl implements Node {
         return this.context.getScheduler().scheduleElectionTimeout(this::electionTimeout);
     }
 
-    private void electionTimeout () {
+    public void electionTimeout () {
         context.getTaskExecutor().submit(this::doProcessElectionTimeout);
     }
 
@@ -235,7 +235,7 @@ public class NodeImpl implements Node {
         role.cancelTimeoutOrTask();
         if (currentVoteCount > countOfMajor / 2) { // 票数过半
             // become leader
-            logger.info("become leader, term {}", role.getTerm());
+            logger.info("node {} become leader, term {}", context.getSelfId(), role.getTerm());
             // resetReplicatingStates(); // todo implement after log replication implementation been done.
             scheduleElectionTimeout();
             changeToRole(new LeaderNodeRole(role.getTerm(), scheduleLogReplicationTask()));
@@ -251,7 +251,7 @@ public class NodeImpl implements Node {
         return context.getScheduler().scheduleLogReplicationTask(this::replicateLog);
     }
 
-    private void replicateLog () {
+    public void replicateLog () {
         context.getTaskExecutor().submit(this::doReplicateLog);
     }
 

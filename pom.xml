@@ -27,6 +27,7 @@
         <commons-cli.version>1.4</commons-cli.version>
         <jline.version>3.9.0</jline.version>
         <junit.version>4.11</junit.version>
+        <jackson.version></jackson.version>
     </properties>
 
     <dependencyManagement>
