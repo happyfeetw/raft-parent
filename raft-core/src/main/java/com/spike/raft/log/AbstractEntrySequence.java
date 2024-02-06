@@ -7,8 +7,8 @@ import java.util.List;
 
 public abstract class AbstractEntrySequence implements EntrySequence{
 
-    private int logIndexOffset;
-    private int nextLogIndex;
+    protected int logIndexOffset;
+    protected int nextLogIndex;
 
     public AbstractEntrySequence(int logIndexOffset) {
         this.logIndexOffset = logIndexOffset;
@@ -30,7 +30,7 @@ public abstract class AbstractEntrySequence implements EntrySequence{
         return doGetFirstLogIndex();
     }
 
-    private int doGetFirstLogIndex() {
+    protected int doGetFirstLogIndex() {
         return logIndexOffset;
     }
 
@@ -42,7 +42,7 @@ public abstract class AbstractEntrySequence implements EntrySequence{
         return doGetLastLogIndex();
     }
 
-    private int doGetLastLogIndex() {
+    protected int doGetLastLogIndex() {
         return nextLogIndex - 1;
     }
 
@@ -140,16 +140,6 @@ public abstract class AbstractEntrySequence implements EntrySequence{
     protected abstract void doAppend(Entry entry);
 
     @Override
-    public void commit(int index) {
-
-    }
-
-    @Override
-    public int getCommitIndex() {
-        return 0;
-    }
-
-    @Override
     public void removeAfter(int index) {
         if (isEmpty() || index >= doGetLastLogIndex()) {
             return;
@@ -163,9 +153,4 @@ public abstract class AbstractEntrySequence implements EntrySequence{
      * @param index
      */
     protected abstract void doRemoveAfter(int index);
-
-    @Override
-    public void close() {
-
-    }
 }
