@@ -6,7 +6,7 @@ import java.io.InputStream;
 public interface SeekableFile {
     // 获取当前位置
     long position() throws IOException;
-    // 移动到指定位置
+    // 将文件指针移动到指定位置
     void seek(long position) throws IOException;
     // 写入整数
     void writeInt(int i) throws IOException;
