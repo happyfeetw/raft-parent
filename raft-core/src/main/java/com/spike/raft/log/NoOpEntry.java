@@ -2,8 +2,8 @@ package com.spike.raft.log;
 
 public class NoOpEntry extends AbstractEntry{
 
-    public NoOpEntry(int kind, int index, int term) {
-        super(kind, index, term);
+    public NoOpEntry(int index, int term) {
+        super(KIND_NO_OP, index, term);
     }
 
     @Override
