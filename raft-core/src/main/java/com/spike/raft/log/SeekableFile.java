@@ -14,7 +14,7 @@ public interface SeekableFile {
     void writeLong(long l) throws IOException;
     // 写入字节数组
     void write(byte[] b) throws IOException;
-    // 读取整数
+    // 读取整数(1个)
     int readInt() throws IOException;
     // 读取长整数
     long readLong() throws IOException;
